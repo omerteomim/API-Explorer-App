@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokémon Finder</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg">
+        <div class="container">
+            <h1>🔍 Pokémon Info Finder</h1>
+            <form method="post" class="search-box">
+                <input type="text" name="pokemon_name" placeholder="e.g., Pikachu" required>
+                <button type="submit">Search</button>
+            </form>
+            
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+            
+            {% if pokemon %}
+            <div class="card">
+                <h2>{{ pokemon.name }}</h2>
+                <img src="{{ pokemon.image_url }}" alt="{{ pokemon.name }}">
+                                
+                <div class="stats">
+                    <p><strong>Height:</strong> {{ pokemon.height }}</p>
+                    <p><strong>Weight:</strong> {{ pokemon.weight }}</p>
+                                        
+                    <p><strong>Types:</strong>
+                        {% for t in pokemon.types %}
+                            <span class="badge">{{ t }}</span>
+                        {% endfor %}
+                    </p>
+                    
+                    <p><strong>Abilities:</strong>
+                        {% for a in pokemon.abilities %}
+                            <span class="badge">{{ a }}</span>
+                        {% endfor %}
+                    </p>
+                    
+                    <div class="stat-block">
+                        <h4>Base Stats:</h4>
+                        <div class="stat-bars">
+                            {% for key, value in pokemon.stats.items() %}
+                                <div class="stat-row">
+                                    <span class="stat-name">{{ key }}</span>
+                                    <div class="bar-container">
+                                        <div class="bar" style="width: {{ (value / 255.0 * 100)|round(1) }}%"></div>
+                                    </div>
+                                    <span class="stat-value">{{ value }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="moves-block">
+                        <h4>Top Moves:</h4>
+                        <ul>
+                            {% for move in pokemon.moves %}
+                                <li>{{ move }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
