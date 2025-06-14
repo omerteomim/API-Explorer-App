@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dad Jokes - API Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .joke-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .joke-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .joke-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .joke-text {
+            font-size: 1.5rem;
+            color: #333;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .joke-icon {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .get-joke-button {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            margin: 20px 0;
+        }
+
+        .get-joke-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .joke-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .joke-reactions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .reaction-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .reaction-button:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .joke-counter {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .dad-joke-tips {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .dad-joke-tips h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .dad-joke-tips p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨 Dad Jokes</h1>
+            <p>Get ready to groan with these classic dad jokes that are so bad, they're good!</p>
+        </div>
+
+        <div class="joke-container">
+            <form method="POST" class="joke-form">
+                <button type="submit" class="get-joke-button">Tell Me a Joke 😄</button>
+            </form>
+
+            {% if error %}
+                <div class="error">
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+
+            {% if joke %}
+                <div class="joke-card">
+                    <div class="joke-icon">😄</div>
+                    <p class="joke-text">{{ joke }}</p>
+                    
+                    <div class="joke-reactions">
+                        <button class="reaction-button">😄</button>
+                        <button class="reaction-button">😐</button>
+                        <button class="reaction-button">😴</button>
+                    </div>
+                </div>
+
+                <div class="joke-stats">
+                    <div class="stat">
+                        <div class="stat-value">🎯</div>
+                        <div class="stat-label">Dad Approved</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">🔥</div>
+                        <div class="stat-label">So Bad It's Good</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">😄</div>
+                        <div class="stat-label">Guaranteed Groan</div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="dad-joke-tips">
+                <h3>💡 Dad Joke Tips</h3>
+                <p>Did you know? The best dad jokes are the ones that make you groan the loudest! Keep clicking for more pun-tastic humor.</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+</body>
+</html>

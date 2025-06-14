@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evil Insult Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff5858 0%, #7f00ff 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 60px auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff5858, #7f00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .insult-card {
+            background: #fff0f6;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(127,0,255,0.08);
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: #7f00ff;
+            font-weight: 500;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .get-insult-btn {
+            padding: 15px 35px;
+            background: linear-gradient(45deg, #ff5858, #7f00ff);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(127, 0, 255, 0.2);
+        }
+        .get-insult-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 0, 255, 0.3);
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ff5858, #7f00ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(127, 0, 255, 0.2);
+        }
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 0, 255, 0.3);
+        }
+        .note {
+            color: #888;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .evil-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="evil-icon">😈</span>
+        <h1>Evil Insult Generator</h1>
+        <p>Get a wickedly funny insult from the Evil Insult Generator API. Not for the faint of heart!</p>
+        <form method="POST">
+            <button type="submit" class="get-insult-btn">Roast Me</button>
+        </form>
+        {% if insult %}
+            <div class="insult-card">
+                {{ insult }}
+            </div>
+        {% endif %}
+        <div class="note">Powered by <a href="https://evilinsult.com/" target="_blank" style="color:#7f00ff;text-decoration:underline;">evilinsult.com</a></div>
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+</body>
+</html>

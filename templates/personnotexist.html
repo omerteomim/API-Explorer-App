@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Not Exist - AI Faces</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 60px auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .ai-face {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin: 0 auto 20px;  /* auto left/right centers it */
+            display: block;        /* required for margin auto to work on img */
+        }
+
+        .get-face-btn {
+            padding: 15px 35px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .get-face-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .note {
+            color: #888;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧑‍💻 Person Not Exist</h1>
+        <p>See a face that doesn't exist! Each time you click the button, you'll get a new AI-generated person.</p>
+        <form method="POST">
+            <button type="submit" class="get-face-btn">Generate New Face</button>
+        </form>
+        {% if face_url %}
+            <img src="{{ face_url }}" alt="AI Generated Person" class="ai-face">
+        {% endif %}
+        <div class="note">Powered by <a href="https://thispersondoesnotexist.com/" target="_blank" style="color:#764ba2;text-decoration:underline;">thispersondoesnotexist.com</a></div>
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+</body>
+</html>
