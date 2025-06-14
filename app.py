@@ -2,8 +2,13 @@ from flask import Flask, request, render_template, jsonify
 import requests
 
 app = Flask(__name__)
+
 @app.route("/", methods=["GET", "POST"])
 def index():
+    return render_template("index.html")
+
+@app.route("/pokemon", methods=["GET", "POST"])
+def pokemon():
     pokemon_data = None
     error = None
 
@@ -27,7 +32,27 @@ def index():
         else:
             error = f"Pokémon '{name}' not found."
 
-    return render_template("index.html", pokemon=pokemon_data, error=error)
+    return render_template("pokemon.html", pokemon=pokemon_data, error=error)
+@app.route("/dogs", methods=["GET", "POST"])
+def dogs():
+    dog_data = None
+    error = None
+
+    if request.method == "POST":
+        breed = request.form["dog_breed"].strip().lower()
+        url = f"https://dog.ceo/api/breed/{breed}/images/random"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            dog_data = {
+                "breed": breed.title(),
+                "image_url": data["message"]
+            }
+        else:
+            error = f"Breed '{breed}' not found."
+
+    return render_template("dogs.html", dog=dog_data, error=error)
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000,debug=True)
 

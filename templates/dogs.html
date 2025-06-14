@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Gallery - API Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f9f3b9 0%, #827d4d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #827d4d, #f9f3b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #827d4d;
+            box-shadow: 0 0 0 3px rgba(130, 125, 77, 0.2);
+        }
+
+        .search-button {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #827d4d, #f9f3b9);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(130, 125, 77, 0.3);
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(130, 125, 77, 0.4);
+        }
+
+        .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .dog-result {
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        .dog-result h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        .dog-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .dog-image:hover {
+            transform: scale(1.02);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #827d4d, #f9f3b9);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(130, 125, 77, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(130, 125, 77, 0.4);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .breed-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(130, 125, 77, 0.1);
+            border-radius: 15px;
+            text-align: left;
+        }
+
+        .breed-info p {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐕 Dog Gallery</h1>
+            <p>Discover beautiful images of your favorite dog breeds. Enter a breed name below to get started!</p>
+        </div>
+
+        <form method="POST" class="search-form">
+            <input type="text" 
+                   name="dog_breed" 
+                   class="search-input" 
+                   placeholder="Enter dog breed (e.g., labrador, husky, poodle)" 
+                   required>
+            <button type="submit" class="search-button">Search</button>
+        </form>
+
+        {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        {% if dog %}
+            <div class="dog-result">
+                <h2>{{ dog.breed }}</h2>
+                <img src="{{ dog.image_url }}" 
+                     alt="Image of {{ dog.breed }}" 
+                     class="dog-image">
+                <div class="breed-info">
+                    <p>✨ A beautiful {{ dog.breed }} captured in its natural pose.</p>
+                    <p>💡 Tip: Try searching for different breeds to discover more adorable dogs!</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <a href="/" class="back-button">← Back to Home</a>
+    </div>
+</body>
+</html>
