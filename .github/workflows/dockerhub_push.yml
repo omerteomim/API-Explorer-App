@@ -92,12 +92,9 @@ jobs:
           )
           echo "ROUTES=${ROUTES[*]}" >> $GITHUB_OUTPUT
 
-      - name: Run docker compose
-        run: |
-          docker compose up -d
-
       - name: test routes 
         run: |
+          docker compose up -d
           echo "Testing routes..."
           for route in ${{ steps.routes.outputs.ROUTES }}; do
             echo "Testing route: $route"
