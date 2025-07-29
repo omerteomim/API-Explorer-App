@@ -96,13 +96,19 @@ jobs:
         run: |
           docker compose up -d
           echo "Testing routes..."
-          for route in ${{ steps.routes.outputs.ROUTES }}; do
-            echo "Testing route: $route"
-            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
-            if [ "$response" -ne 200 ]; then
-              echo "Test failed for route $route with response code $response"
-              exit 1
-            else
-              echo "Test passed for route $route with response code $response"
-            fi
-          done
+          cat <<EOF > test_routes.sh
+            #!/bin/bash
+            for route in ${{ steps.routes.outputs.ROUTES }}; do
+              echo "Testing route: $route"
+              response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
+              if [ "$response" -ne 200 ]; then
+                echo "Test failed for route $route with response code $response"
+                exit 1
+              else
+                echo "Test passed for route $route with response code $response"
+              fi
+            done
+          EOF
+          chmod +x test_routes.sh
+          ./test_routes.sh
+          docker compose down
