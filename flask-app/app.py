@@ -106,26 +106,6 @@ def dadjokes():
 
     return render_template("dadjokes.html", joke=joke, error=error)
 
-@app.route("/memes", methods=["GET", "POST"])
-def memes():
-    meme_data = None
-    error = None
-
-    if request.method == "POST":
-        url = "https://meme-api.com/gimme"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            meme_data = {
-                "title": data["title"],
-                "image_url": data["url"]
-            }
-        else:
-            error = "Failed to fetch a meme."
-
-    return render_template("memes.html", meme=meme_data, error=error)
-
 @app.route("/personnotexist", methods=["GET", "POST"])
 def personnotexist():
     face_url = None

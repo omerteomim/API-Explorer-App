@@ -70,3 +70,36 @@ jobs:
                 -X DELETE \
                 "https://hub.docker.com/v2/repositories/$DOCKERHUB_USERNAME/$REPO_NAME/tags/$tag/"
             done
+  test:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-to-dockerhub, cleanup-old-tags]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker image tag
+        id: routes
+        run: |
+          ROUTES=(
+            "/"
+            "/shoppinglist"
+            "/dogs"
+            "/shoppinglist/delete/"
+            "/pokemon"
+            "/dadjokes"
+            "/personnotexist"
+            "/evilinsult"
+          )
+      - name: Run tests
+        run: |
+          docker compose up -d
+          for route in "${ROUTES[@]}"; do
+            echo "Testing route: $route"
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
+            if [ "$response" -ne 200 ]; then
+              echo "Test failed for route $route with response code $response"
+              exit 1
+            else
+              echo "Test passed for route $route with response code $response"
+            fi
+          done
