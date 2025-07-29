@@ -26,6 +26,7 @@ jobs:
           
       - name: Build and tag Docker images
         run: |
+          cd flask-app
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/api_app:${{ steps.vars.outputs.IMAGE_TAG }} .
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/api_app:${{ steps.vars.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/api_app:latest
           docker images
