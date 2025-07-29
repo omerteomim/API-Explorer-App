@@ -26,14 +26,14 @@ jobs:
           
       - name: Build and tag Docker images
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/pokemon_app:${{ steps.vars.outputs.IMAGE_TAG }} .
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/pokemon_app:${{ steps.vars.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/pokemon_app:latest
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/api_app:${{ steps.vars.outputs.IMAGE_TAG }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/api_app:${{ steps.vars.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/api_app:latest
           docker images
 
       - name: Push Docker images to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pokemon_app:${{ steps.vars.outputs.IMAGE_TAG }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pokemon_app:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api_app:${{ steps.vars.outputs.IMAGE_TAG }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api_app:latest
 
   cleanup-old-tags:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
         env:
             DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
             DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-            REPO_NAME: pokemon_app
+            REPO_NAME: api_app
         run: |
             echo "Fetching tags from Docker Hub..."
 
