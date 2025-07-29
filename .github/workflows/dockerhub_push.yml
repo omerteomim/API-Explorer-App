@@ -90,14 +90,16 @@ jobs:
             "/personnotexist"
             "/evilinsult"
           )
+          echo "ROUTES=${ROUTES[*]}" >> $GITHUB_OUTPUT
+
       - name: Run docker compose
         run: |
           docker compose up -d
-          
+
       - name: test routes 
         run: |
           echo "Testing routes..."
-          for route in "${ROUTES[@]}"; do
+          for route in ${{ steps.routes.outputs.ROUTES }}; do
             echo "Testing route: $route"
             response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
             if [ "$response" -ne 200 ]; then
