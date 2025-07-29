@@ -90,9 +90,13 @@ jobs:
             "/personnotexist"
             "/evilinsult"
           )
-      - name: Run tests
+      - name: Run docker compose
         run: |
           docker compose up -d
+          
+      - name: test routes 
+        run: |
+          echo "Testing routes..."
           for route in "${ROUTES[@]}"; do
             echo "Testing route: $route"
             response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
