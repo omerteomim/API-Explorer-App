@@ -5,6 +5,8 @@ while true; do
     elapsed_time=$(current_time - start_time)
     if [ $elapsed_time -ge 20 ]; then
         exit 1
+    fi
+done
 for route in / /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/; do
     echo "Testing route: $route"
     response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
