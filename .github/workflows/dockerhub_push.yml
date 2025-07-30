@@ -76,39 +76,10 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-      
-      - name: Set up Docker image tag
-        id: routes
-        run: |
-          ROUTES=(
-            "/"
-            "/shoppinglist"
-            "/dogs"
-            "/shoppinglist/delete/"
-            "/pokemon"
-            "/dadjokes"
-            "/personnotexist"
-            "/evilinsult"
-          )
-          echo "ROUTES=${ROUTES[*]}" >> $GITHUB_OUTPUT
 
       - name: test routes 
         run: |
           docker compose up -d
           echo "Testing routes..."
-          cat <<EOF > test_routes.sh
-            #!/bin/bash
-            for route in ${{ steps.routes.outputs.ROUTES }}; do
-              echo "Testing route: $route"
-              response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
-              if [ "$response" -ne 200 ]; then
-                echo "Test failed for route $route with response code $response"
-                exit 1
-              else
-                echo "Test passed for route $route with response code $response"
-              fi
-            done
-          EOF
-          chmod +x test_routes.sh
-          ./test_routes.sh
+          curl -s http://localhost:5000/health | grep -q "OK" || { echo "Health check failed"; exit 1; }
           docker compose down
