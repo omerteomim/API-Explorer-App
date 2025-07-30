@@ -15,6 +15,17 @@ db.init_app(app)
 def create_tables():
     db.create_all()
 
+@app.route("/debug-routes")
+def debug_routes():
+    routes = []
+    for rule in app.url_map.iter_rules():
+        routes.append({
+            'endpoint': rule.endpoint,
+            'methods': list(rule.methods),
+            'rule': rule.rule
+        })
+    return jsonify(routes)
+
 @app.route("/health", methods=["GET"])
 def health():
     """Health check endpoint that tests all routes and dependencies"""
