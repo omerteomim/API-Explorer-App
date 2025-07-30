@@ -81,26 +81,21 @@ jobs:
         id: routes
         run: |
           ROUTES="/ /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/"
-          echo "FLASKROUTES=${FLASK_ROUTES}" >> $GITHUB_OUTPUT
+          echo "FLASKROUTES=${ROUTES}" >> $GITHUB_OUTPUT
 
       - name: test routes 
         run: |
           docker compose up -d
           echo "Testing routes..."
-          cat <<EOF > test.sh
-            #!/bin/bash
-            ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
-            for route in \$ROUTES; do
-              echo "Testing route: \$route"
-              response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
-              if [ "$response" -eq 200 ]; then
-                echo "Route $route is reachable."
-              else
-                echo "Route $route failed with status code $response."
-                exit 1
-              fi
-            done
-          EOF
-          chmod +x test.sh
-          ./test.sh
+          ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
+          for route in \$ROUTES; do
+            echo "Testing route: \$route"
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
+            if [ "$response" -eq 200 ]; then
+              echo "Route $route is reachable."
+            else
+              echo "Route $route failed with status code $response."
+              exit 1
+            fi
+          done
           docker compose down
