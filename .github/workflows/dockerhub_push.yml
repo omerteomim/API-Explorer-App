@@ -77,15 +77,16 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Test routes
+      - name: Set up Docker Compose
         run: |
           docker compose up -d
-          echo "Testing routes..."
 
+      - name: Test routes
+        run: |
+          echo "Testing routes..."
           cat > test.sh <<'EOF'
             #!/bin/bash
-            ROUTES="/ /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/"
-            for route in $ROUTES; do
+            for route in / /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/; do
               echo "Testing route: $route"
               response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
               if [ "$response" -eq 200 ]; then
@@ -96,7 +97,7 @@ jobs:
                 exit 1
               fi
             done
-            docker compose down
+            docker compose down 
             EOF
 
           chmod +x test.sh
