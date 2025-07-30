@@ -81,5 +81,5 @@ jobs:
         run: |
           docker compose up -d
           echo "Testing routes..."
-          curl -s http://localhost:5000/health | grep -q "OK" || { echo "Health check failed"; exit 1; }
+          curl -s http://localhost:5000/health | grep -q "healthy" || { echo "Health check failed"; exit 1; }
           docker compose down
