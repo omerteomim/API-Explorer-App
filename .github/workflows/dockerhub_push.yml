@@ -77,23 +77,14 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up Docker image tag
-        id: routes
-        run: |
-          ROUTES="/ /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/"
-          echo "FLASKROUTES=${ROUTES}" >> $GITHUB_OUTPUT
-
       - name: Test routes
         run: |
           docker compose up -d
           echo "Testing routes..."
 
-          ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
-          echo "ROUTES='$ROUTES'"
-
           cat > test.sh <<'EOF'
             #!/bin/bash
-            ROUTES="$ROUTES"
+            ROUTES="/ /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/"
             for route in $ROUTES; do
               echo "Testing route: $route"
               response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
