@@ -88,6 +88,7 @@ jobs:
           docker compose up -d
           echo "Testing routes..."
           ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
+          cat <<EOF > test.sh
           for route in \$ROUTES; do
             echo "Testing route: \$route"
             response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
@@ -98,4 +99,7 @@ jobs:
               exit 1
             fi
           done
+          EOF
+          chmod +x test.sh
+          ./test.sh
           docker compose down
