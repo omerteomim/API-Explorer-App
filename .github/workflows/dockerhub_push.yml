@@ -77,9 +77,29 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      - name: Set up Docker image tag
+        id: routes
+        run: |
+          ROUTES="/ /shoppinglist /pokemon /dogs /dadjokes /evilinsult /shoppinglist/delete/"
+          echo "FLASKROUTES=${FLASK_ROUTES}" >> $GITHUB_OUTPUT
+
       - name: test routes 
         run: |
           docker compose up -d
           echo "Testing routes..."
-          curl -s http://localhost:5000/health | grep -q "healthy" || { echo "Health check failed"; exit 1; }
+          cat <<EOF > test.sh
+            #!/bin/bash
+            for route in "${{ steps.routes.outputs.FLASKROUTES }}"; do
+              echo "Testing route: $route"
+              response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
+              if [ "$response" -eq 200 ]; then
+                echo "Route $route is reachable."
+              else
+                echo "Route $route failed with status code $response."
+                exit 1
+              fi
+            done
+          EOF
+          chmod +x test.sh
+          ./test.sh
           docker compose down
