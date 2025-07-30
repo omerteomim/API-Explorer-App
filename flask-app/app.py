@@ -4,9 +4,10 @@ import time
 import random
 from flask_sqlalchemy import SQLAlchemy
 from models import db, ShoppingItem
+from healthcheck import HealthCheck
 
 app = Flask(__name__)
-
+health_check = HealthCheck()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mypassword@db:5432/mydb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -15,110 +16,99 @@ db.init_app(app)
 def create_tables():
     db.create_all()
 
-@app.route("/debug-routes")
-def debug_routes():
-    routes = []
-    for rule in app.url_map.iter_rules():
-        routes.append({
-            'endpoint': rule.endpoint,
-            'methods': list(rule.methods),
-            'rule': rule.rule
-        })
-    return jsonify(routes)
-
-@app.route("/health", methods=["GET"])
+# @app.route("/health", methods=["GET"])
 def health():
-    print("Health route called!")
-    return "healthy"
-    # """Health check endpoint that tests all routes and dependencies"""
-    # health_status = {
-    #     "status": "healthy",
-    #     "timestamp": time.time(),
-    #     "checks": {}
-    # }
+    """Health check endpoint that tests all routes and dependencies"""
+    health_status = {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "checks": {}
+    }
     
-    # overall_healthy = True
+    overall_healthy = True
     
-    # # Test database connection
-    # try:
-    #     db.session.execute('SELECT 1')
-    #     health_status["checks"]["database"] = {"status": "healthy", "message": "Connection successful"}
-    # except Exception as e:
-    #     health_status["checks"]["database"] = {"status": "unhealthy", "message": str(e)}
-    #     overall_healthy = False
+    # Test database connection
+    try:
+        db.session.execute('SELECT 1')
+        health_status["checks"]["database"] = {"status": "healthy", "message": "Connection successful"}
+    except Exception as e:
+        health_status["checks"]["database"] = {"status": "unhealthy", "message": str(e)}
+        overall_healthy = False
     
-    # # Test all GET routes
-    # routes_to_test = [
-    #     {"path": "/", "name": "index"},
-    #     {"path": "/shoppinglist", "name": "shoppinglist"},
-    #     {"path": "/pokemon", "name": "pokemon"},
-    #     {"path": "/dogs", "name": "dogs"},
-    #     {"path": "/dadjokes", "name": "dadjokes"},
-    #     {"path": "/personnotexist", "name": "personnotexist"},
-    #     {"path": "/evilinsult", "name": "evilinsult"}
-    # ]
+    # Test all GET routes
+    routes_to_test = [
+        {"path": "/", "name": "index"},
+        {"path": "/shoppinglist", "name": "shoppinglist"},
+        {"path": "/pokemon", "name": "pokemon"},
+        {"path": "/dogs", "name": "dogs"},
+        {"path": "/dadjokes", "name": "dadjokes"},
+        {"path": "/personnotexist", "name": "personnotexist"},
+        {"path": "/evilinsult", "name": "evilinsult"}
+    ]
     
-    # with app.test_client() as client:
-    #     for route in routes_to_test:
-    #         try:
-    #             response = client.get(route["path"])
-    #             if response.status_code == 200:
-    #                 health_status["checks"][route["name"]] = {
-    #                     "status": "healthy", 
-    #                     "status_code": response.status_code,
-    #                     "message": "Route accessible"
-    #                 }
-    #             else:
-    #                 health_status["checks"][route["name"]] = {
-    #                     "status": "warning", 
-    #                     "status_code": response.status_code,
-    #                     "message": f"Unexpected status code: {response.status_code}"
-    #                 }
-    #         except Exception as e:
-    #             health_status["checks"][route["name"]] = {
-    #                 "status": "unhealthy", 
-    #                 "message": str(e)
-    #             }
-    #             overall_healthy = False
+    with app.test_client() as client:
+        for route in routes_to_test:
+            try:
+                response = client.get(route["path"])
+                if response.status_code == 200:
+                    health_status["checks"][route["name"]] = {
+                        "status": "healthy", 
+                        "status_code": response.status_code,
+                        "message": "Route accessible"
+                    }
+                else:
+                    health_status["checks"][route["name"]] = {
+                        "status": "warning", 
+                        "status_code": response.status_code,
+                        "message": f"Unexpected status code: {response.status_code}"
+                    }
+            except Exception as e:
+                health_status["checks"][route["name"]] = {
+                    "status": "unhealthy", 
+                    "message": str(e)
+                }
+                overall_healthy = False
     
-    # # Test external API dependencies
-    # external_apis = [
-    #     {"name": "pokemon_api", "url": "https://pokeapi.co/api/v2/pokemon/pikachu"},
-    #     {"name": "dog_api", "url": "https://dog.ceo/api/breed/labrador/images/random"},
-    #     {"name": "dadjoke_api", "url": "https://icanhazdadjoke.com/", "headers": {"Accept": "application/json"}},
-    #     {"name": "thispersondoesnotexist", "url": "https://thispersondoesnotexist.com"},
-    #     {"name": "evilinsult_api", "url": "https://evilinsult.com/generate_insult.php?lang=en&type=text"}
-    # ]
+    # Test external API dependencies
+    external_apis = [
+        {"name": "pokemon_api", "url": "https://pokeapi.co/api/v2/pokemon/pikachu"},
+        {"name": "dog_api", "url": "https://dog.ceo/api/breed/labrador/images/random"},
+        {"name": "dadjoke_api", "url": "https://icanhazdadjoke.com/", "headers": {"Accept": "application/json"}},
+        {"name": "thispersondoesnotexist", "url": "https://thispersondoesnotexist.com"},
+        {"name": "evilinsult_api", "url": "https://evilinsult.com/generate_insult.php?lang=en&type=text"}
+    ]
     
-    # for api in external_apis:
-    #     try:
-    #         headers = api.get("headers", {})
-    #         response = requests.get(api["url"], headers=headers, timeout=5)
-    #         if response.status_code == 200:
-    #             health_status["checks"][api["name"]] = {
-    #                 "status": "healthy", 
-    #                 "status_code": response.status_code,
-    #                 "message": "API accessible"
-    #             }
-    #         else:
-    #             health_status["checks"][api["name"]] = {
-    #                 "status": "warning", 
-    #                 "status_code": response.status_code,
-    #                 "message": f"API returned status: {response.status_code}"
-    #             }
-    #     except requests.exceptions.Timeout:
-    #         health_status["checks"][api["name"]] = {
-    #             "status": "warning", 
-    #             "message": "API timeout (>5s)"
-    #         }
-    #     except Exception as e:
-    #         health_status["checks"][api["name"]] = {
-    #             "status": "warning", 
-    #             "message": f"API error: {str(e)}"
-    #         }
+    for api in external_apis:
+        try:
+            headers = api.get("headers", {})
+            response = requests.get(api["url"], headers=headers, timeout=5)
+            if response.status_code == 200:
+                health_status["checks"][api["name"]] = {
+                    "status": "healthy", 
+                    "status_code": response.status_code,
+                    "message": "API accessible"
+                }
+            else:
+                health_status["checks"][api["name"]] = {
+                    "status": "warning", 
+                    "status_code": response.status_code,
+                    "message": f"API returned status: {response.status_code}"
+                }
+        except requests.exceptions.Timeout:
+            health_status["checks"][api["name"]] = {
+                "status": "warning", 
+                "message": "API timeout (>5s)"
+            }
+        except Exception as e:
+            health_status["checks"][api["name"]] = {
+                "status": "warning", 
+                "message": f"API error: {str(e)}"
+            }
     
-    # # Set overall status
-    # return jsonify(health_status), 200 if overall_healthy else 503
+    # Set overall status
+    return jsonify(health_status), 200 if overall_healthy else 503
+
+health_check.add_check(health)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
