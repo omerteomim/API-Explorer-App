@@ -89,8 +89,9 @@ jobs:
           echo "Testing routes..."
           cat <<EOF > test.sh
             #!/bin/bash
-            for route in "${{ steps.routes.outputs.FLASKROUTES }}"; do
-              echo "Testing route: $route"
+            ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
+            for route in \$ROUTES; do
+              echo "Testing route: \$route"
               response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
               if [ "$response" -eq 200 ]; then
                 echo "Route $route is reachable."
