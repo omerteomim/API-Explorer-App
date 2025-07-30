@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, redirect, jsonify
-import json
 import requests
 import time
 import random
@@ -117,12 +116,7 @@ def health():
             }
     
     # Set overall status
-    if overall_healthy:
-        health_status["status"] = "healthy"
-        json.dumps(health_status), 200, {'Content-Type': 'application/json'}
-    else:
-        health_status["status"] = "unhealthy"
-        json.dumps(health_status), 503, {'Content-Type': 'application/json'}
+    return jsonify(health_status), 200 if overall_healthy else 503
 
 @app.route("/", methods=["GET", "POST"])
 def index():
