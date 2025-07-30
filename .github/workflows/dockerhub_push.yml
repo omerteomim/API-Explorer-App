@@ -93,7 +93,7 @@ jobs:
 
           cat > test.sh <<'EOF'
             #!/bin/bash
-            ROUTES="${{ steps.routes.outputs.FLASKROUTES }}"
+            ROUTES="$ROUTES"
             for route in $ROUTES; do
               echo "Testing route: $route"
               response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000$route)
