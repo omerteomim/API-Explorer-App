@@ -28,6 +28,7 @@ def debug_routes():
 
 @app.route("/health", methods=["GET"])
 def health():
+    print("Health route called!")
     return "healthy"
     # """Health check endpoint that tests all routes and dependencies"""
     # health_status = {
