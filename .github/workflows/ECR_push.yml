@@ -23,7 +23,7 @@ jobs:
       
       - name: test db connection
         run: |
-          echo "testing db connection...""
+          echo "testing db connection..."
           docker compose exec -T db pg_isready -U myuser -d mydb
       
       - name: test web
