@@ -9,7 +9,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   web:
-    image: omerteomim/api_app:latest
+    build: ./flask-app
     ports:
       - "5000:5000"
     depends_on:
