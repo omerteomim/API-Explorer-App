@@ -26,4 +26,14 @@ module "ECR" {
 module "EC2" {
     source = "../../modules/EC2"
     environment = var.environment
+    key_name =var.key_name
+}
+
+module "ALB" {
+  source           = "../../modules/ALB"
+  environment      = var.environment
+  instance_ids     = module.EC2.instance_ids
+  vpc_id           = module.EC2.vpc_id
+  subnet_ids       = module.EC2.subnet_ids
+  security_group_id = module.EC2.security_group_id
 }

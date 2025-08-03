@@ -13,5 +13,4 @@ variable "aws_region" {
 variable "key_name" {
   description = "AWS Key Pair name"
   type        = string
-  default     = "omer-key-1501"
 }
