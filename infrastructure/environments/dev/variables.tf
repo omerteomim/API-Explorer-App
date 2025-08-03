@@ -9,3 +9,9 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "key_name" {
+  description = "AWS Key Pair name"
+  type        = string
+  default     = "omer-key-1501"
+}

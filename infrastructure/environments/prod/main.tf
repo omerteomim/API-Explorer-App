@@ -22,3 +22,8 @@ module "ECR" {
   environment = var.environment
   aws_region  = var.aws_region
 }
+
+module "EC2" {
+    source = "../../modules/EC2"
+    environment = var.environment
+}
