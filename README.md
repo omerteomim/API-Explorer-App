@@ -1,6 +1,6 @@
 # 🌐 API Explorer App
 
-A powerful Flask-based web application that serves as a unified interface for exploring and interacting with multiple external APIs. This dockerized application provides a clean, intuitive dashboard for developers and users to discover, test, and integrate various API services.
+A containerized Flask and PostgreSQL web application, deployed seamlessly to AWS using Terraform with infrastructure components including EC2, ECR, and an Application Load Balancer for scalable and efficient delivery. This is a web application that serves as a unified interface for exploring and interacting with multiple external APIs. This dockerized application provides a clean, intuitive dashboard for developers and users to discover, test, and integrate various API services.
 
 ## ✨ Features
 
@@ -15,93 +15,68 @@ A powerful Flask-based web application that serves as a unified interface for ex
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Web Browser   │◄──►│   Flask App      │◄──►│  External APIs  │
-│   (Frontend)    │    │   (Backend)      │    │   (Various)     │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌──────────────────┐
-                       │   Docker         │
-                       │   Container      │
-                       └──────────────────┘
-```
+### This deployment architecture is designed for a scalable and resilient web application using AWS services:
 
-## 🚀 Quick Start
+- **Amazon ECR (Elastic Container Registry)**
+Stores Docker images of your containerized Flask application. Acts as a centralized and secure repository from which EC2 instances can pull the latest application version.
 
-### Prerequisites
+- **EC2 Instances (Elastic Compute Cloud)**
+Two EC2 instances are provisioned using Terraform.
+Each EC2 pulls the application image from ECR and runs the app inside a Docker container.
+The app is typically orchestrated via Docker Compose, which also spins up a PostgreSQL container alongside the Flask app. These instances act as the backend servers serving application traffic.
 
-- [Docker](https://www.docker.com/get-started) installed on your system
+- **Application Load Balancer (ALB)**
+Distributes incoming HTTP traffic evenly across the two EC2 instances. Provides health checks to route traffic only to healthy instances. Improves fault tolerance and availability, allowing seamless failover.
 
-### Using Docker (Recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/omerteomim/API-Explorer-App.git
-   cd API-Explorer-App
-   ```
 
-2. **Build and run with Docker**
-   ```bash
-   # Build the Docker image
-   docker build -t api-explorer-app .
-   
-   # Run the container
-   docker run -p 5000:5000 api-explorer-app
-   ```
-
-3. **Access the application**
-   Open your browser and navigate to: [http://localhost:5000](http://localhost:5000)
-
-### Local Development Setup
-
-1. **Clone and setup environment**
-   ```bash
-   git clone https://github.com/omerteomim/API-Explorer-App.git
-   cd API-Explorer-App
-   
-   # Create virtual environment
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   
-   # Install dependencies
-   pip install -r requirements.txt
-   ```
-
-2. **Environment Configuration**
-   ```bash
-   # Copy environment template
-   cp .env.example .env
-   
-   # Edit .env file with your API keys and configuration
-   nano .env
-   ```
-
-3. **Run the application**
-   ```bash
-   python app.py
-   ```
 
 ## 📁 Project Structure
 
 ```
 API-Explorer-App/
-├── app.py                  # Main Flask application
-├── Dockerfile              # Docker configuration
-├── requirements.txt        # Python dependencies
-├── .dockerignore           # Docker ignore rules
-├── templates/              # Every HTML files for the app
-│   ├── dadjokes.html
-│   ├── dogs.html              
-│   ├── memes.html  
-│   ├── evilinsult.html  
-│   ├── dadjokes.html  
-│   ├── personnotexist.html  
-│   ├── index.html  
-│   └── pokemon.html 
-├── static/
-│   ├── styles.css
+├───.github
+│   └───workflows
+│           CI.yml
+│   .gitignore
+│   docker-compose.yaml
+│   README.md
+├───flask-app
+│   │   .dockerignore
+│   │   app.py
+│   │   Dockerfile
+│   │   models.py
+│   │   requirements.txt
+│   ├───static
+│   │  └────styles.css
+│   └───templates
+│       |   dadjokes.html
+│       |   dogs.html
+│       |   evilinsult.html
+│       |   index.html
+│       |   personnotexist.html
+│       |   pokemon.html
+│       └───shoppinglist.html
+└───infrastructure
+    ├───environments
+    │   ├───dev
+    │   │   │   main.tf
+    │   │   └───variables.tf
+    │   └───prod
+    │       │   main.tf
+    │       └───variables.tf
+    └───modules
+        ├───ALB
+        |   │   main.tf
+        |    └───variables.tf
+        ├───EC2
+        |   │   data.tf
+        |   │   main.tf
+        |   │   outputs.tf
+        |   └───variables.tf
+        └───ECR
+            │   main.tf
+            └───variables.tf
 ```
 ## 🤝 Contributing
 
@@ -124,13 +99,5 @@ API-Explorer-App/
 - All external API providers
 - Open source contributors
 
-## 📚 Additional Resources
-
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Docker Documentation](https://docs.docker.com/)
-- [API Design Best Practices](https://restfulapi.net/)
-- [Python Best Practices](https://docs.python-guide.org/)
-
----
 
 ⭐ **Star this repository if you find it helpful!**
