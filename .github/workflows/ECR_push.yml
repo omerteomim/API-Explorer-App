@@ -32,7 +32,7 @@ jobs:
       - name: Build and tag Docker images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          ECR_REPOSITORY: api-app-dev
           IMAGE_TAG: ${{ steps.vars.outputs.IMAGE_TAG }}
         run: |
           cd flask-app
@@ -43,7 +43,7 @@ jobs:
       - name: Push Docker images to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          ECR_REPOSITORY: api-app-dev
           IMAGE_TAG: ${{ steps.vars.outputs.IMAGE_TAG }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
