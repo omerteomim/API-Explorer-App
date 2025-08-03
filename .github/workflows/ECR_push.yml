@@ -31,6 +31,11 @@ jobs:
           echo "testing web service..."
           curl -f http://localhost:5000 || { 
           docker compose logs web; exit 1; }  
+        
+      - name: docker compose down
+        run: |
+          echo "Stopping and removing containers..."
+          docker compose down --volumes --remove-orphans
 
   build-and-push-to-ecr:
     runs-on: ubuntu-latest
